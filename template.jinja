@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+   <h1>Dashboard</h1>
+   <h3>Goals</h3>
+   <ul>
+    {% for goal in goals %}
+        <li>{{ goal }}</li>
+    {% endfor %}
+   </ul>
+   <h3>Achievements</h3>
+   <ul>
+    {% for achievement in achievements %}
+        <li>{{ achievement }}</li>
+    {% endfor %}
+   </ul>
+   <h3>Feedback</h3>
+   <ul>
+    {% for f in feedback %}
+        <li>{{ f }}</li>
+    {% endfor %}
+   </ul> 
+</body>
+</html>
