@@ -4,8 +4,11 @@ from image_writer import ImageWriter
 from llm import LLM
 from document_writer import DocumentWriter
 import asyncio
+import logging
 
 class Vision2TextEngine:
+
+    logger = logging.getLogger(__name__)
 
     def __init__(self, config: Config):
         self.__runnable: bool = True
@@ -17,7 +20,17 @@ class Vision2TextEngine:
         self.__document_writer = config.get("document_writer")
 
     async def run(self):
+        try:
+            await self.__run()
+        except asyncio.CancelledError as e:
+            self.logger.info("Stopping")
+            await self.stop()
+            await asyncio.sleep(3)
+            self.logger.info("Bye!")
+
         
+    async def __run(self):
+
         for frame in self.__frame_iterator:
 
             if not self.__runnable:
@@ -25,9 +38,13 @@ class Vision2TextEngine:
             
             await self.__image_writer.write(self.__temp_image_file_path, frame)
 
-            extracted_text = await self.__llm.extract_text(self.__temp_image_file_path)
+            # try:
+            #     extracted_text = await self.__llm.extract_text(self.__temp_image_file_path)
+            # except Exception as e:
+            #     self.logger.error(f"Cannot extract text from image: {e}")
+            #     continue
 
-            await self.__document_writer.execute(extracted_text)
+            # await self.__document_writer.execute(extracted_text)
 
             await asyncio.sleep(self.__interval)
 

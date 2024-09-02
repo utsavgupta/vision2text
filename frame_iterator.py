@@ -58,4 +58,49 @@ class LocalFrameIterator(FrameIterator):
         pass
 
 class WebcamFrameIterator(FrameIterator):
-    pass
+    
+    def __init__(self, device_id: int):
+        self.__capture = cv2.VideoCapture(device_id)
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        ret, frame = self.__capture.read()
+
+        if not ret:
+            print("Cannot access video device, exiting")
+            raise StopIteration
+        
+        return frame
+    
+    def shutdown(self):
+        self.__capture.release()
+
+
+class VideoFrameIterator(FrameIterator):
+    
+    def __init__(self, path: str):
+        self.__capture = cv2.VideoCapture(path)
+        self.__skip = 30*5
+        self.__curr = 0
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        
+        ret, frame = self.__capture.read()
+
+        if not ret:
+            print("Cannot read video frame, exiting")
+            raise StopIteration
+        
+        self.__curr += self.__skip
+        self.__capture.set(cv2.CAP_PROP_POS_FRAMES, self.__curr)
+
+        return frame
+    
+    def shutdown(self):
+        self.__capture.release()
+    
